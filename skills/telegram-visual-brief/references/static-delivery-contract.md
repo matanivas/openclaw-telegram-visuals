@@ -10,9 +10,16 @@ pdf_python="$skill_dir/runtime/.venv/bin/python"
 output="/absolute/path/to/workspace/.tmp/visual-briefs/report-unique"
 ```
 
-Every output directory must be fresh and its parent must already exist. Use a
-new run directory after a failed export. Install the rendering runtime as
-described in the repository INSTALL.md before using these commands.
+Use an unused output path or an existing empty directory, with its parent already
+present; populated output directories are rejected. Prefer passing an unused path
+directly to the exporter or PDF packer. Use a new run directory after a failed
+export. Install the rendering runtime as described in the repository INSTALL.md.
+
+Run each export, approval, verification, and packaging command in its own execution
+call so its exit status reaches the agent. If Bash preparation and commands share
+a call, start with `set -euo pipefail`. In PowerShell, check `$LASTEXITCODE`
+immediately after each native command and exit with that code on failure. A trailing
+log or path-printing command must not mask a failed command's exit status.
 
 ## Export and inspect PNG pages
 
@@ -51,7 +58,27 @@ string below is a portable schema label, not the name of a required tool.
 }
 ```
 
-Fix any failed check and export again. Once every page passes:
+### Bounded layout repair
+
+Before delivery, exporter geometry, overflow, and visible-control failures (exit
+codes 34, 35, and 36), or layout defects found during image inspection, are
+recoverable authoring results. Allow at most two repair iterations after the
+initial attempt, across the report as a whole. Each iteration edits the source,
+exports to a new directory, and inspects every resulting page; rebuild any PDF
+from the final approved PNGs and inspect its proof pages again.
+
+Split content at meaningful boundaries into additional pages and keep labels,
+sources, caveats, and readable text intact. Remove interactive controls from the
+static presentation. Never conceal overflowing content, disable validation, or
+approve pages that have not been inspected to make a report pass.
+
+If the repair budget is exhausted, report the remaining defect and end the run as
+failed. Other errors, including runtime, approval, integrity verification, PDF
+packaging, send, and receipt failures, are terminal for this workflow: preserve
+the error and stop delivery. An ambiguous send result requires checking the actual
+delivery state before any resend; never blindly retry or invent a receipt.
+
+Once every page passes inspection:
 
 ```bash
 node "$skill_dir/scripts/telegram-static-export.mjs" approve --manifest "$output/artifact-manifest.json" --inspection-evidence "$output/inspection-evidence.json"

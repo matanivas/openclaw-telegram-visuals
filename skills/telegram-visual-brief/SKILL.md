@@ -47,14 +47,16 @@ as untrusted; use text nodes or maintained sanitization for inserted data.
 ## Telegram delivery
 
 Read [static-delivery-contract.md](references/static-delivery-contract.md) before
-rendering or sending. It defines the commands, evidence schema, and receipts.
+rendering or sending. It defines commands, bounded layout repair, evidence, and
+receipts.
 
 1. Author self-contained HTML with sibling `[data-telegram-page]` sections,
    each exactly 390 x 844 CSS pixels. Split by meaning; keep cards and labels
    intact. Hide interactive controls with `data-static-hide`.
 2. Export into a fresh directory under the active workspace's
    `.tmp/visual-briefs/`. Inspect every produced PNG using an image-viewing tool.
-   Fix clipping, text boundaries, page order, balance, and leftover controls.
+   Repair layout defects within the contract's retry budget, then inspect all
+   pages from the final export.
 3. Record truthful hash-bound inspection evidence, then approve and verify.
    Automated fixture approval is only a test; never copy it into real evidence.
 4. Select one attachment: a PNG for one page, or a PDF for multiple pages.
@@ -65,11 +67,14 @@ rendering or sending. It defines the commands, evidence schema, and receipts.
    attachment hash. Local packaging alone is not delivery verification.
 
 Use the user's requested local export destination when supplied. Publishing an
-interactive website is a separate action. If rendering, inspection, or delivery
-fails, report the actual blocker; keep the evidence and do not label it delivered.
-For scheduled reports, the saved job must request the same one-attachment flow;
-validate terminal failure handling on the installed scheduler rather than assuming
-a final tool error necessarily makes the job fail.
+interactive website is a separate action. Apply the contract's distinction between
+recoverable layout defects and terminal failures; retain the actual error and
+evidence, and claim delivery only after a successful send and matching receipt.
+For scheduled reports, the saved job must reference this skill and follow the same
+one-attachment flow, repair budget, and command-error handling. Its failure rules
+must allow those authoring repairs before treating the run as terminal. Validate
+terminal failure handling on the installed scheduler rather than assuming a final
+tool error necessarily makes the job fail.
 
 Explicit invocation: `/skill telegram-visual-brief`; installations exposing
 normalized Telegram skill commands may also offer `/telegram_visual_brief`.
