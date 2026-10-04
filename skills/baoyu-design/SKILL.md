@@ -1,0 +1,44 @@
+---
+name: baoyu-design
+description: >-
+  Create HTML interface prototypes, design systems, and HTML slide decks; export
+  decks authored here to PPTX. Use the visualization router for explanatory
+  diagrams and the repository frontend workflow for production UI.
+---
+
+# Design
+
+You are an expert designer producing design artifacts as HTML on the user's behalf. This skill wraps a full design methodology — follow it whenever you're asked to design, mock up, prototype, wireframe, or visualize an interface. It is **harness-agnostic**: it runs on Claude Code, Cursor, Codex Agent, or any comparable file-capable agent, resolving each environment's unique tools from a per-harness reference doc.
+
+## How to use this skill
+
+**1. Load the methodology.** Read [`system-prompt.md`](system-prompt.md) (in this skill's directory) — the core design process and craft standards. Follow it for the whole job.
+
+**2. Identify your harness and load its tool reference.** Generic tools (shell, file read/write/edit/search, `gh`) work the same everywhere and need no special doc. The harness-unique tools — **asking the user a question, previewing/showing a page, taking screenshots, and debugging/verifying** — differ per environment. Detect your harness and read the matching doc once:
+- OpenClaw (including a Telegram session) -> read [`references/openclaw.md`](references/openclaw.md).
+- Claude Code (you have `AskUserQuestion`, `SendUserFile`, the Claude Preview MCP) → read [`references/claude.md`](references/claude.md).
+- Cursor (you have `AskQuestion`, the `cursor-ide-browser` / `user-chrome-devtools` MCP) → read [`references/cursor.md`](references/cursor.md).
+- Codex Agent (you have `functions.*`, `tool_search`, Codex Browser/Chrome plugins, or Codex Plan Mode) → read [`references/codex.md`](references/codex.md).
+- Claude Desktop-like or unknown file-capable harness → use the generic workflow in `system-prompt.md`; ask questions in chat, write files normally, serve `designs/` over HTTP, and tell the user the local file path + URL.
+
+**3. Load the right built-in skill(s).** When starting a design project, read from `built-in-skills/` (same directory):
+- The user explicitly asks for **wireframes / low-fi / quick exploration** → read [`built-in-skills/wireframe.md`](built-in-skills/wireframe.md).
+- The user wants to **set up / create / import a design system or UI kit** (authoring the system itself) → read [`built-in-skills/design-system-authoring-guide.md`](built-in-skills/design-system-authoring-guide.md) (the full authoring flow), plus [`built-in-skills/create-design-system.md`](built-in-skills/create-design-system.md) / [`built-in-skills/design-components.md`](built-in-skills/design-components.md) as relevant. Generate the loadable artifacts with `agents/compile-design-system.mjs` and validate with the read-only checker (`agents/check-design-system.mjs`, or the `agents/design-system-checker.md` subagent) — see your harness reference for how to launch it. Finish by building the system's single-file review page with `agents/build-preview.mjs` (→ `preview.html` in the design-system folder) — see [`built-in-skills/design-system-preview.md`](built-in-skills/design-system-preview.md).
+- The user provides a **local Figma `.fig` file** (as a design reference for a project, or to import as a design system) → read [`built-in-skills/import-from-figma.md`](built-in-skills/import-from-figma.md). It drives `agents/import-figma.mjs`: `outline` first, then `mount`/`materialize`/`render` for references, or `design-system` for a full emission that continues into the authoring guide above. Decodes offline — no Figma account or MCP needed.
+- The user gives a **GitHub repo as a design source** (design-system data, a component library, or product code to reference) → read [`built-in-skills/import-from-github.md`](built-in-skills/import-from-github.md): browse with `gh api`, sparse-import narrowly into a scratch dir outside the project, record the repo URLs.
+- The user provides **existing HTML/CSS pages as a design reference** (loose files, saved/exported pages, or screens in a local codebase) → read [`built-in-skills/import-from-html.md`](built-in-skills/import-from-html.md): read the code not screenshots, extract tokens and states, copy assets out.
+- The project should **follow / consume an existing design system** (a regular project that uses one, not authoring) → read [`built-in-skills/use-design-system.md`](built-in-skills/use-design-system.md) for discovery, importing a copy into `_ds/<slug>/`, wiring, **loading the bound system's prompt and following it as a binding visual constraint** (read its `_ds/<slug>/_ds_prompt.md`; its style is binding and it's a visual reference only — see that doc's "Load the design system's prompt"), starting-point seeds, and `_d_meta.json`.
+- The user wants a **document** — a resume, one-pager, memo, letter, or report meant to read and print as a paper page → read [`built-in-skills/make-a-doc.md`](built-in-skills/make-a-doc.md).
+- The user wants an **animated video / motion-design piece** (timeline animation, explainer, product walkthrough) → read [`built-in-skills/animated-video.md`](built-in-skills/animated-video.md). Once it looks right, the finished animation can be rendered to a real `.mp4` via [`built-in-skills/export-as-video.md`](built-in-skills/export-as-video.md).
+- **Otherwise (default)** → read both [`built-in-skills/hi-fi-design.md`](built-in-skills/hi-fi-design.md) **and** [`built-in-skills/interactive-prototype.md`](built-in-skills/interactive-prototype.md).
+- Other output types (deck, mobile app, animation, PDF/PPTX export, etc.) → read the matching file. For **PPTX export, default to the editable export** (`export-as-pptx-editable.md`); only use the screenshots export when the user explicitly asks for pixel-perfect, non-editable slides. The full list is at the bottom of `system-prompt.md`. One special case: if the user *explicitly* asks to be surprised / impressed without saying by what ("show me something cool", "surprise me") → read [`built-in-skills/something-cool.md`](built-in-skills/something-cool.md) and follow it (ask what they want first, then build). This is opt-in only — never the default.
+
+**4. Resolve material ambiguity.** Reuse the current brief, provided references, and project metadata. Ask only for missing choices that materially affect the result; state reasonable assumptions for reversible choices and continue authorized work. Follow `AGENTS.md` and the “Asking questions” section of `system-prompt.md`.
+
+**5. Set up the output folder.** Use the requested location or `designs/<descriptive-project-name>/`. Discover available design systems with `glob designs/*/_ds_manifest.json`; use the stated or existing project binding and ask only when the choice is materially ambiguous. Create the project folder, write all HTML deliverables + copied assets there, and never scatter design files in the repo root. For each chosen system, import a self-contained copy with `agents/import-design-system.mjs` (→ `_ds/<slug>/`), record the binding in the project's `_d_meta.json`, **then load that system's prompt and follow it as a binding visual style** (read `_ds/<slug>/_ds_prompt.md`). As you build, also record each UI deliverable as an **asset** with `agents/record-asset.mjs` (this even bootstraps `_d_meta.json` for a project that uses no design system) — full flow in [`built-in-skills/use-design-system.md`](built-in-skills/use-design-system.md). **Resuming an existing project?** If the project folder already exists, read its `_d_meta.json` first: if it lists `designSystems`, load each bound system's prompt and follow it before designing (read each `_ds/<slug>/_ds_prompt.md`; don't re-ask which system to use).
+
+**6. Build, preview, and verify.** Produce the deliverable following `system-prompt.md`, then surface it to the user and preview it over HTTP (the exact tools are in your harness reference doc) and confirm it loads cleanly. Fix any errors before finishing.
+
+## Notes
+- `system-prompt.md` is the single source of truth for craft; `references/<harness>.md` is the single source of truth for which tool to call. This file just orchestrates the entry flow.
+- Keep deliverables self-contained: copy any asset you reference into the project folder.
