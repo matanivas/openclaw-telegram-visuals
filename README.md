@@ -33,4 +33,4 @@ Claude Code reads `~/.claude/skills/`, Codex reads `~/.agents/skills/`. A skill 
 
 Original code and text: MIT (`LICENSE`). Bundled: diagram-design by Cathryn Lavery (MIT) and the Heebo font (SIL Open Font License 1.1); see `THIRD_PARTY.md`.
 
-The earlier version of this repository (a curated bundle of OpenClaw visualization skills with a Telegram router) is in the git history and tagged `v1-bundle`.
+The earlier version of this repository (a curated bundle of OpenClaw visualization skills with a Telegram router) is kept on the branch [`v1-bundle`](https://github.com/matanivas/openclaw-telegram-visuals/tree/v1-bundle).
