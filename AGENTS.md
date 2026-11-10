@@ -1,14 +1,5 @@
-# Repository maintenance
+# Working in this repository
 
-This repository packages reusable OpenClaw skills. For installation requests,
-follow INSTALL.md. The canonical routing and Telegram delivery rules live in
-skills/telegram-visual-brief/SKILL.md and its linked references.
-
-Keep host paths, credentials, destinations, generated output, and runtime caches
-out of published files. Preserve upstream attribution and license files. Record
-changes to vendored skills in THIRD_PARTY.md. Skill changes require regenerating
-bundle-manifest.json with scripts/build-manifest.py.
-
-Test installer changes in a temporary workspace. Test rendering changes with the
-smoke runner. Fixture-generated approval evidence must remain clearly synthetic;
-real deliveries require actual image inspection and actual send results.
+- `skills/show-me` and `skills/phone-viz` share `scripts/build.mjs`, `scripts/render.mjs`, `templates/page.css` and `references/`. A fix to one belongs in the other in the same change; only `SKILL.md` and delivery differ.
+- Before committing: `node --check` every script, build every `examples/*.json` with both skills, and look at the PNGs `render.mjs` makes in both themes.
+- Keep the skills free of personal data: no names, paths or keys from any one user's machine.

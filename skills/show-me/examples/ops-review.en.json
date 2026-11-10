@@ -1,0 +1,29 @@
+{
+  "lang": "en",
+  "eyebrow": "Clinic · week 45",
+  "title": "Where the team's time went, and where it is needed",
+  "subtitle": "Front desk is short by a day; supplies are ahead of need.",
+  "people": ["Maya", "Omer", "Lior"],
+  "asOf": "2026-11-08",
+  "blocks": [
+    { "type": "bars", "title": "Days spent vs days needed", "series": ["Spent", "Needed"],
+      "items": [
+        { "label": "Front desk", "values": [3, 4] },
+        { "label": "Supplies", "values": [2, 1] },
+        { "label": "Billing", "values": [1.5, 1.5] }
+      ] },
+    { "type": "map", "title": "Open work by area",
+      "groups": [
+        { "name": "Patients", "items": [
+          { "label": "Reminder texts", "state": "done", "who": "Maya" },
+          { "label": "New intake form", "state": "active", "who": "Omer", "weight": 2 } ] },
+        { "name": "Suppliers", "focus": true, "items": [
+          { "label": "Glove reorder", "state": "waiting", "who": "Lior" },
+          { "label": "Sterilizer service", "state": "stuck" } ] },
+        { "name": "Money", "items": [
+          { "label": "November invoices", "state": "todo" } ] }
+      ] },
+    { "type": "svg", "title": "How an order goes out", "file": "approval-flow.svg",
+      "caption": "Hand-drawn diagram embedded with an svg block (Hebrew labels, right-to-left)." }
+  ]
+}

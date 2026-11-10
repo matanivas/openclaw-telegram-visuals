@@ -1,23 +1,23 @@
-name: Bundle checks
+name: Checks
 on: [push, pull_request]
 permissions:
   contents: read
 jobs:
-  install-and-render:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: python -m unittest discover -s tests
-      - name: Install into a disposable workspace
+      - name: Syntax
+        run: for f in skills/*/scripts/*.mjs; do node --check "$f"; done
+      - name: Build the examples
         run: |
-          mkdir -p "$RUNNER_TEMP/visuals-workspace"
-          python scripts/install.py --workspace "$RUNNER_TEMP/visuals-workspace" --protocol --apply
-          python scripts/setup-runtime.py --workspace "$RUNNER_TEMP/visuals-workspace"
-          node "$RUNNER_TEMP/visuals-workspace/skills/telegram-visual-brief/runtime/node_modules/playwright/cli.js" install-deps chromium
-      - run: python scripts/smoke.py --workspace "$RUNNER_TEMP/visuals-workspace"
+          for s in show-me phone-viz; do
+            for spec in skills/$s/examples/*.json; do
+              node skills/$s/scripts/build.mjs "$spec" "$RUNNER_TEMP/$s-$(basename "$spec" .json).html"
+            done
+          done
+      - name: Render one page
+        run: node skills/show-me/scripts/render.mjs "$RUNNER_TEMP/show-me-weekly-status.he.html" --theme light

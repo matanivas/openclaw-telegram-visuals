@@ -1,0 +1,5 @@
+# Source of this folder
+
+Copied from https://github.com/cathrynlavery/diagram-design (commit e57eda6, 2026-11-06), folder `skills/diagram-design/`, under the MIT licence in `LICENSE`. `GUIDE.md` is that skill's `SKILL.md`, renamed so OpenClaw does not load it as a second skill. Included: `GUIDE.md`, all of `references/`, `assets/template.html`, `assets/template-dark.html`, and `self_check.py` (Python 3, standard library: `python3 self_check.py file.html`). Not included: the other example pages in `assets/`, the import and export scripts.
+
+How this skill uses it: the visual-type guide (GUIDE.md section 3), the type references, the connector rules and the complexity budget. Its default skin (paper, coral accent, Instrument Serif and Geist fonts) is replaced by this skill's palette and Heebo, as `../color-and-marks.md` ("Hand-drawn SVG") maps. Its onboarding gate (GUIDE.md section 0) does not apply here: the style is already chosen. Its "confirm before drawing" step applies only when the reader is waiting in the chat and the form is unclear; otherwise state the assumption in the caption.
